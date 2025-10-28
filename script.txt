@@ -1,0 +1,36 @@
+-- Roblox Studio Script
+-- Lists visible directories (top-level services + their immediate children)
+-- Includes Workspace
+-- Copies the result to your clipboard
+
+local paths = {}
+
+local function getPath(obj, indent)
+	return string.rep("  ", indent) .. "game/" .. obj.Name .. " (" .. obj.ClassName .. ")"
+end
+
+-- Loop through top-level services you can see in Explorer
+for _, service in ipairs(game:GetChildren()) do
+	-- Add the service itself
+	table.insert(paths, getPath(service, 0))
+
+	-- Add its immediate children (one level deep)
+	for _, child in ipairs(service:GetChildren()) do
+		table.insert(paths, getPath(child, 1))
+	end
+end
+
+-- Sort alphabetically for consistency (optional)
+table.sort(paths)
+
+-- Combine everything into a single text block
+local output = table.concat(paths, "\n")
+
+print("Found " .. #paths .. " visible items (including Workspace). Copying to clipboard...")
+
+if setclipboard then
+	setclipboard(output)
+	print("✅ Copied visible game directory structure (including Workspace).")
+else
+	print("⚠️ setclipboard() not available in this environment.")
+end
